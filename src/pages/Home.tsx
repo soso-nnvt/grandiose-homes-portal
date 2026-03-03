@@ -1,19 +1,24 @@
 import { motion } from 'motion/react';
 import { ArrowRight, ShieldCheck, Users, Map, LayoutGrid } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { SEO } from '../components/SEO';
 
 export function Home() {
   const headline = "Grandiose 2026: Your Roadmap to Property Ownership.";
   
   return (
     <main className="min-h-screen bg-ivory text-forest-950">
+      <SEO 
+        title="Grandiose Homes | Luxury Real Estate & Smart Cities in Nigeria"
+        description="Invest in premium real estate, smart cities, and land banking in Nigeria with Grandiose Homes. Secure your future with verified titles and world-class infrastructure."
+      />
       {/* Hero Section */}
       <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden pt-32 md:pt-32">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <img
-            src="https://res.cloudinary.com/djfqa4llc/image/upload/v1771627533/casa-venta-residencial-el-tigre-nuevo-nayarit-vista-lagos_b3ffcb.jpg"
-            alt="Luxury Real Estate"
+            src="https://res.cloudinary.com/djfqa4llc/image/upload/f_webp,q_auto/v1771627533/casa-venta-residencial-el-tigre-nuevo-nayarit-vista-lagos_b3ffcb.jpg"
+            alt="Luxury-smart-city-plots-Magboro-Grandiose-Homes"
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />
@@ -31,7 +36,10 @@ export function Home() {
             className="mb-8 inline-flex items-center gap-3 bg-white/20 backdrop-blur-md border border-white/30 rounded-full px-6 py-2"
           >
             <ShieldCheck className="text-lime-400 w-5 h-5" />
-            <span className="text-sm font-bold tracking-wide text-white">RC 1642680 &middot; Subsidiary of Grandiose Group</span>
+            <span className="text-sm font-bold tracking-wide text-white">
+              <span className="sr-only">Registered Company Number </span>
+              RC 1642680 &middot; Subsidiary of Grandiose Group
+            </span>
           </motion.div>
 
           {/* Headline */}
@@ -136,8 +144,8 @@ export function Home() {
             >
               <div className="absolute -inset-4 bg-lime-500/10 blur-3xl rounded-full opacity-50"></div>
               <img
-                src="https://res.cloudinary.com/djfqa4llc/image/upload/v1771627143/Real-estate-developer-in-Lagos-1024x1024.png.bv.webp_imq0jf.webp"
-                alt="Grandiose Team"
+                src="https://res.cloudinary.com/djfqa4llc/image/upload/f_webp,q_auto/v1771627143/Real-estate-developer-in-Lagos-1024x1024.png.bv.webp_imq0jf.webp"
+                alt="Grandiose Group Properties Team in Lagos"
                 className="relative z-10 rounded-3xl luxury-shadow w-full object-cover aspect-[4/3] group-hover:scale-[1.02] transition-transform duration-700"
                 referrerPolicy="no-referrer"
               />

@@ -1,9 +1,35 @@
 import { motion } from 'motion/react';
 import { MapPin, TrendingUp, Shield, CheckCircle2, ArrowRight } from 'lucide-react';
+import { SEO } from '../components/SEO';
 
 export function Projects() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    "name": "Ileri Smart City",
+    "description": "Premium smart city plots in Magboro, Lagos axis. Features 24/7 security, steady power, and smart infrastructure.",
+    "url": "https://grandiosehomes.com/projects",
+    "image": "https://res.cloudinary.com/djfqa4llc/image/upload/f_webp,q_auto/v1771627326/zylushomespCwmqaAysDzk11-1024x575_st5g8r.jpg",
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "NGN",
+      "price": "5000000",
+      "availability": "https://schema.org/InStock"
+    },
+    "provider": {
+      "@type": "RealEstateAgent",
+      "name": "Grandiose Homes & Investment Limited",
+      "identifier": "RC 1642680"
+    }
+  };
+
   return (
     <main className="min-h-screen bg-ivory text-forest-950 pt-32 pb-24">
+      <SEO 
+        title="Invest in Ileri Smart City Magboro | Plots from ₦5M"
+        description="Discover Ileri Smart City in Magboro by Grandiose Homes. Secure your plot today with verified titles, smart infrastructure, and excellent ROI."
+        schema={schema}
+      />
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="max-w-4xl mb-24">
@@ -42,8 +68,8 @@ export function Projects() {
             className="lg:col-span-7 relative group overflow-hidden rounded-3xl luxury-shadow"
           >
             <img
-              src="https://res.cloudinary.com/djfqa4llc/image/upload/v1771627326/zylushomespCwmqaAysDzk11-1024x575_st5g8r.jpg"
-              alt="Ileri Smart City"
+              src="https://res.cloudinary.com/djfqa4llc/image/upload/f_webp,q_auto/v1771627326/zylushomespCwmqaAysDzk11-1024x575_st5g8r.jpg"
+              alt="Ileri Smart City Magboro - Affordable Smart Cities Nigeria"
               className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
               referrerPolicy="no-referrer"
             />
@@ -112,8 +138,8 @@ export function Projects() {
           className="relative group overflow-hidden rounded-3xl luxury-shadow h-[500px]"
         >
           <img
-            src="https://res.cloudinary.com/djfqa4llc/image/upload/v1771627414/661e39652a6cb7ab105b3bc5cdb31510a25d98f7_kf3lqa.jpg"
-            alt="The Dream"
+            src="https://res.cloudinary.com/djfqa4llc/image/upload/f_webp,q_auto/v1771627414/661e39652a6cb7ab105b3bc5cdb31510a25d98f7_kf3lqa.jpg"
+            alt="Luxury Real Estate Nigeria - The Dream Realized"
             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
             referrerPolicy="no-referrer"
           />

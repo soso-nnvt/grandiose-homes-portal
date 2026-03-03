@@ -6,6 +6,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useSpring } from 'motion/react';
 import { useEffect } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { Navigation } from './components/Navigation';
 import { Footer } from './components/Footer';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
@@ -55,20 +56,22 @@ export default function App() {
   });
 
   return (
-    <Router>
-      <ScrollToTop />
-      <div className="flex flex-col min-h-screen bg-ivory text-forest-950 font-sans selection:bg-lime-500 selection:text-forest-950">
-        <motion.div
-          className="fixed top-0 left-0 right-0 h-1 bg-lime-500 origin-left z-[10000]"
-          style={{ scaleX }}
-        />
-        <Navigation />
-        <div className="flex-grow">
-          <AnimatedRoutes />
+    <HelmetProvider>
+      <Router>
+        <ScrollToTop />
+        <div className="flex flex-col min-h-screen bg-ivory text-forest-950 font-sans selection:bg-lime-500 selection:text-forest-950">
+          <motion.div
+            className="fixed top-0 left-0 right-0 h-1 bg-lime-500 origin-left z-[10000]"
+            style={{ scaleX }}
+          />
+          <Navigation />
+          <div className="flex-grow">
+            <AnimatedRoutes />
+          </div>
+          <Footer />
+          <FloatingWhatsApp />
         </div>
-        <Footer />
-        <FloatingWhatsApp />
-      </div>
-    </Router>
+      </Router>
+    </HelmetProvider>
   );
 }

@@ -1,9 +1,14 @@
 import { motion } from 'motion/react';
 import { BookOpen, GraduationCap, FileText, ArrowRight, LogIn, Download } from 'lucide-react';
+import { SEO } from '../components/SEO';
 
 export function Vault() {
   return (
     <main className="min-h-screen bg-ivory text-forest-950 pt-32 pb-24">
+      <SEO 
+        title="Investor Vault | Grandiose Homes"
+        description="Access secure documents, master plans, and ROI projections for Grandiose Homes real estate investments in Nigeria."
+      />
       <div className="container mx-auto px-6">
         {/* Header - Institutional Look */}
         <div className="max-w-4xl mb-24">
@@ -43,8 +48,8 @@ export function Vault() {
           >
             <div className="absolute -inset-4 bg-lime-500/10 blur-3xl rounded-full opacity-50"></div>
             <img
-              src="https://res.cloudinary.com/djfqa4llc/image/upload/v1771627533/Real-Estate-Expert-Educates-on-Rent-to-Own_of4k09.jpg"
-              alt="Rent-to-Own Philosophy"
+              src="https://res.cloudinary.com/djfqa4llc/image/upload/f_webp,q_auto/v1771627533/Real-Estate-Expert-Educates-on-Rent-to-Own_of4k09.jpg"
+              alt="Real Estate Expert Educates on Rent-to-Own houses in Lagos"
               className="relative z-10 w-full h-auto rounded-3xl luxury-shadow grayscale hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
               referrerPolicy="no-referrer"
             />
@@ -93,8 +98,8 @@ export function Vault() {
           className="relative group overflow-hidden rounded-3xl luxury-shadow h-[600px]"
         >
           <img
-            src="https://res.cloudinary.com/djfqa4llc/image/upload/v1771627533/cf0bf90016e314294fb4a765a237221fl-b574619593rd-w960_h720_fe1w0q.jpg"
-            alt="Roadmap Unveiling"
+            src="https://res.cloudinary.com/djfqa4llc/image/upload/f_webp,q_auto/v1771627533/cf0bf90016e314294fb4a765a237221fl-b574619593rd-w960_h720_fe1w0q.jpg"
+            alt="Grandiose Group Properties Roadmap Unveiling"
             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
             referrerPolicy="no-referrer"
           />
