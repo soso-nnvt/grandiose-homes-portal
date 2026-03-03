@@ -16,7 +16,7 @@ export function Footer() {
               Leading the way in sustainable and smart real estate developments across Nigeria. RC 1642680.
             </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-12">
             <div>
               <h4 className="font-bold uppercase tracking-widest text-xs mb-6 text-forest-950/40">Navigation</h4>
               <ul className="space-y-2 text-sm font-medium">
@@ -30,7 +30,7 @@ export function Footer() {
               <h4 className="font-bold uppercase tracking-widest text-xs mb-6 text-forest-950/40">Contact</h4>
               <ul className="space-y-2 text-sm font-medium">
                 <li className="py-2 min-h-[44px] flex items-center">0704 612 6348</li>
-                <li className="py-2 min-h-[44px] flex items-center">grandiosegroupng@gmail.com</li>
+                <li className="py-2 min-h-[44px] flex items-center break-all">grandiosegroupng@gmail.com</li>
               </ul>
             </div>
           </div>
