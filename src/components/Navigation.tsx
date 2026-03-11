@@ -5,6 +5,7 @@ import { Menu, X } from 'lucide-react';
 
 const links = [
   { name: 'Home', path: '/', image: 'https://res.cloudinary.com/djfqa4llc/image/upload/v1771627533/casa-venta-residencial-el-tigre-nuevo-nayarit-vista-lagos_b3ffcb.jpg' },
+  { name: 'Properties', path: '/properties', image: 'https://res.cloudinary.com/djfqa4llc/image/upload/v1771627326/zylushomespCwmqaAysDzk11-1024x575_st5g8r.jpg' },
   { name: 'Ileri Smart City', path: '/projects', image: 'https://res.cloudinary.com/djfqa4llc/image/upload/v1771627414/661e39652a6cb7ab105b3bc5cdb31510a25d98f7_kf3lqa.jpg' },
   { name: 'Investor Vault', path: '/vault', image: 'https://res.cloudinary.com/djfqa4llc/image/upload/v1771627533/Real-Estate-Expert-Educates-on-Rent-to-Own_of4k09.jpg' },
   { name: 'Command Center', path: '/contact', image: 'https://res.cloudinary.com/djfqa4llc/image/upload/v1771627143/Real-estate-developer-in-Lagos-1024x1024.png.bv.webp_imq0jf.webp' },

@@ -12,6 +12,8 @@ import { Footer } from './components/Footer';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { Home } from './pages/Home';
 import { Projects } from './pages/Projects';
+import { Properties } from './pages/Properties';
+import { PropertyDetail } from './pages/PropertyDetail';
 import { Vault } from './pages/Vault';
 import { Contact } from './pages/Contact';
 
@@ -29,6 +31,8 @@ function AnimatedRoutes() {
         <Routes location={location}>
           <Route path="/" element={<Home />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/properties" element={<Properties />} />
+          <Route path="/properties/:id" element={<PropertyDetail />} />
           <Route path="/vault" element={<Vault />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
