@@ -24,10 +24,12 @@ export function Properties() {
     async function fetchProperties() {
       try {
         const response = await fetch('/.netlify/functions/get-all-properties');
-        if (!response.ok) {
-          throw new Error('Failed to fetch properties');
-        }
         const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch properties');
+        }
+        
         setProperties(data);
       } catch (err: any) {
         setError(err.message);

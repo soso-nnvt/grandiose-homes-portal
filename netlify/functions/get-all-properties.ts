@@ -1,47 +1,40 @@
 import { Handler } from '@netlify/functions';
+import fetch from 'node-fetch';
+import { Buffer } from 'buffer';
 
 export const handler: Handler = async (event) => {
   const WP_AUTH_USERNAME = process.env.WP_AUTH_USERNAME;
   const WP_AUTH_APP_PASSWORD = process.env.WP_AUTH_APP_PASSWORD;
   const WP_BASE_URL = process.env.WP_BASE_URL || 'https://demorealestate.iceiy.com/wp-json/wp/v2/';
 
-  const auth = Buffer.from(`${WP_AUTH_USERNAME}:${WP_AUTH_APP_PASSWORD}`).toString('base64');
+  const auth = 'Basic ' + Buffer.from(WP_AUTH_USERNAME + ':' + WP_AUTH_APP_PASSWORD).toString('base64');
 
   try {
     const response = await fetch(`${WP_BASE_URL}property?_embed`, {
       headers: {
-        'Authorization': `Basic ${auth}`,
-        'Content-Type': 'application/json',
+        'Authorization': auth,
       },
     });
 
     if (!response.ok) {
       return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: 'Failed to fetch properties from WordPress' }),
+        statusCode: 200,
+        body: JSON.stringify({ error: true, message: `Backend returned ${response.status}` }),
       };
     }
 
-    const data = await response.json();
+    const data: any = await response.json();
 
-    // "Lite" Filter: Strip unnecessary metadata
-    const properties = data.map((item: any) => {
-      // Extracting PropertyHive fields from meta or standard fields
-      // Note: PropertyHive usually stores data in meta fields. 
-      // We assume they are exposed in the REST API.
-      const featuredMedia = item._embedded?.['wp:featuredmedia']?.[0]?.source_url || '';
-      
-      return {
-        id: item.id,
-        slug: item.slug,
-        title: item.title?.rendered,
-        price: item.meta?._price || 'POA',
-        bedrooms: item.meta?._bedrooms || 0,
-        address: item.meta?._address || item.title?.rendered,
-        image: featuredMedia,
-        status: item.meta?._status || 'Available',
-      };
-    });
+    const properties = data.map((item: any) => ({
+      id: item.id,
+      slug: item.slug,
+      title: item.title.rendered,
+      price: item.meta?._ph_price_text || 'Price on Application',
+      bedrooms: item.meta?._ph_bedrooms || 0,
+      address: item.meta?._ph_address_display || 'Lagos, Nigeria',
+      image: item._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
+      status: item.meta?._ph_status || 'Available',
+    }));
 
     return {
       statusCode: 200,
@@ -49,8 +42,8 @@ export const handler: Handler = async (event) => {
     };
   } catch (error: any) {
     return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
+      statusCode: 200,
+      body: JSON.stringify({ error: true, message: error.message }),
     };
   }
 };

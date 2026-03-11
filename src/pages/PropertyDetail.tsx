@@ -32,11 +32,12 @@ export function PropertyDetail() {
     async function fetchProperty() {
       try {
         const response = await fetch(`/.netlify/functions/get-single-property?id=${id}`);
-        if (!response.ok) {
-          if (response.status === 404) throw new Error('Property Not Found');
-          throw new Error('Failed to fetch property details');
-        }
         const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch property details');
+        }
+        
         setProperty(data);
       } catch (err: any) {
         setError(err.message);
