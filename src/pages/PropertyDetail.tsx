@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { SEO } from '../components/SEO';
 import { MapPin, Bed, Bath, ArrowLeft, Send } from 'lucide-react';
+import { mapWPProperty } from '../lib/wp-mapper';
 
 interface Property {
   id: number;
@@ -31,14 +32,19 @@ export function PropertyDetail() {
   useEffect(() => {
     async function fetchProperty() {
       try {
-        const response = await fetch(`/.netlify/functions/get-single-property?id=${id}`);
+        // Fetch from the Express API bridge
+        const response = await fetch(`/api/properties?include=${id}`);
         const data = await response.json();
 
         if (!response.ok) {
           throw new Error(data.error || 'Failed to fetch property details');
         }
         
-        setProperty(data);
+        // The API returns an array even for single ID request
+        const propertyData = Array.isArray(data) ? data[0] : data;
+        if (!propertyData) throw new Error('Property not found');
+
+        setProperty(mapWPProperty(propertyData));
       } catch (err: any) {
         setError(err.message);
       } finally {

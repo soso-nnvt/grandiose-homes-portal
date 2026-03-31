@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/SEO';
-import { MapPin, Bed, Bath, ArrowRight } from 'lucide-react';
+import { MapPin, Bed, ArrowRight } from 'lucide-react';
+import { mapWPProperty } from '../lib/wp-mapper';
 
 interface Property {
   id: number;
@@ -23,15 +24,19 @@ export function Properties() {
   useEffect(() => {
     async function fetchProperties() {
       try {
-        const response = await fetch('/.netlify/functions/get-all-properties');
+        // Fetch from the Express API bridge
+        const response = await fetch('/api/properties');
         const data = await response.json();
         
         if (!response.ok) {
           throw new Error(data.error || 'Failed to fetch properties');
         }
         
-        setProperties(data);
+        // Map the WordPress data to our application's Property interface
+        const mappedProperties = Array.isArray(data) ? data.map(mapWPProperty) : [];
+        setProperties(mappedProperties);
       } catch (err: any) {
+        console.error('Fetch Error:', err);
         setError(err.message);
       } finally {
         setLoading(false);

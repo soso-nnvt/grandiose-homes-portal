@@ -1,0 +1,52 @@
+import { Handler } from "@netlify/functions";
+import axios from "axios";
+import { Buffer } from "buffer";
+
+/**
+ * Netlify Function to bridge request to WordPress API.
+ * Handles authentication and error mapping.
+ */
+export const handler: Handler = async (event, context) => {
+  const WP_BASE_URL = process.env.WP_BASE_URL || "https://demorealestate.iceiy.com/wp-json/wp/v2/";
+  const WP_AUTH_USERNAME = process.env.WP_AUTH_USERNAME;
+  const WP_AUTH_APP_PASSWORD = process.env.WP_AUTH_APP_PASSWORD;
+
+  const getAuthHeader = () => {
+    if (!WP_AUTH_USERNAME || !WP_AUTH_APP_PASSWORD) return null;
+    const token = Buffer.from(`${WP_AUTH_USERNAME}:${WP_AUTH_APP_PASSWORD}`).toString("base64");
+    return `Basic ${token}`;
+  };
+
+  try {
+    const authHeader = getAuthHeader();
+    const headers: any = { "Content-Type": "application/json" };
+    if (authHeader) headers["Authorization"] = authHeader;
+
+    const response = await axios.get(`${WP_BASE_URL}property`, {
+      params: { ...event.queryStringParameters, _embed: true },
+      headers,
+    });
+
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(response.data),
+    };
+  } catch (error: any) {
+    console.error("Netlify Function WP Error:", error.response?.data || error.message);
+    const status = error.response?.status || 500;
+    const message = error.response?.data?.message || error.message || "Internal Server Error";
+
+    return {
+      statusCode: status,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ error: message, details: error.response?.data }),
+    };
+  }
+};
