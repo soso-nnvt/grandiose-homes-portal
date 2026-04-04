@@ -17,7 +17,7 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-const WP_BASE_URL = process.env.WP_BASE_URL || "https://demorealestate.iceiy.com/wp-json/wp/v2/";
+const WP_BASE_URL = process.env.WP_BASE_URL || "https://dev-grandiose-homes.pantheonsite.io/wp-json/wp/v2/";
 const WP_AUTH_USERNAME = process.env.WP_AUTH_USERNAME;
 const WP_AUTH_APP_PASSWORD = process.env.WP_AUTH_APP_PASSWORD;
 
@@ -38,6 +38,7 @@ app.get("/api/properties", async (req, res) => {
     const authHeader = getAuthHeader();
     const headers: any = {
       "Content-Type": "application/json",
+      "X-Pantheon-Staging": "1", // Bypass Pantheon Sandbox Environment Notice
     };
     if (authHeader) {
       headers["Authorization"] = authHeader;
@@ -72,7 +73,11 @@ app.get("/api/properties", async (req, res) => {
 // API Bridge for Offices
 app.get("/api/offices", async (req, res) => {
   try {
-    const response = await axios.get(`${WP_BASE_URL}office`);
+    const response = await axios.get(`${WP_BASE_URL}office`, {
+      headers: {
+        "X-Pantheon-Staging": "1",
+      },
+    });
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.json(response.data);
   } catch (error: any) {

@@ -25,7 +25,7 @@ export const handler: Handler = async (event) => {
 
   const WP_AUTH_USERNAME = process.env.WP_AUTH_USERNAME;
   const WP_AUTH_APP_PASSWORD = process.env.WP_AUTH_APP_PASSWORD;
-  const WP_BASE_URL = process.env.WP_BASE_URL || "https://demorealestate.iceiy.com/wp-json/wp/v2/";
+  const WP_BASE_URL = process.env.WP_BASE_URL || "https://dev-grandiose-homes.pantheonsite.io/wp-json/wp/v2/";
 
   const getAuthHeader = () => {
     if (!WP_AUTH_USERNAME || !WP_AUTH_APP_PASSWORD) return null;
@@ -37,8 +37,7 @@ export const handler: Handler = async (event) => {
     const authHeader = getAuthHeader();
     const headers: any = { 
       "Content-Type": "application/json",
-      "Cookie": "__test=565ab1bfb1b388eda096b7a3120ea422",
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      "X-Pantheon-Staging": "1", // Bypass Pantheon Sandbox Environment Notice
     };
     if (authHeader) headers["Authorization"] = authHeader;
 
@@ -46,21 +45,10 @@ export const handler: Handler = async (event) => {
     const response = await axios.get(`${WP_BASE_URL}property`, {
       params: { _embed: true },
       headers,
-      // We use 'text' or default to see the raw response if it's HTML
-      // but the user wants to see if it's still returning the JS challenge.
-      // If it's JSON, axios will parse it. If it's HTML, we'll see it.
+      responseType: "json",
     });
 
-    // Log the first 200 characters of the raw response data
-    const rawData = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
-    console.log("RAW BODY (first 200 chars):", rawData.substring(0, 200));
-
     const data = response.data;
-
-    // If data is a string, it might be the HTML challenge
-    if (typeof data === 'string' && data.includes('<!doctype html')) {
-      throw new Error("Received HTML instead of JSON. Security challenge likely failed.");
-    }
 
     // Map WordPress data using Property Hive meta keys (_ph_)
     const properties = data.map((item: any) => {

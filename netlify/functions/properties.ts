@@ -21,7 +21,7 @@ export const handler: Handler = async (event, context) => {
     };
   }
 
-  const WP_BASE_URL = process.env.WP_BASE_URL || "https://demorealestate.iceiy.com/wp-json/wp/v2/";
+  const WP_BASE_URL = process.env.WP_BASE_URL || "https://dev-grandiose-homes.pantheonsite.io/wp-json/wp/v2/";
   const WP_AUTH_USERNAME = process.env.WP_AUTH_USERNAME;
   const WP_AUTH_APP_PASSWORD = process.env.WP_AUTH_APP_PASSWORD;
 
@@ -33,7 +33,10 @@ export const handler: Handler = async (event, context) => {
 
   try {
     const authHeader = getAuthHeader();
-    const headers: any = { "Content-Type": "application/json" };
+    const headers: any = { 
+      "Content-Type": "application/json",
+      "X-Pantheon-Staging": "1", // Bypass Pantheon Sandbox Environment Notice
+    };
     if (authHeader) headers["Authorization"] = authHeader;
 
     const response = await axios.get(`${WP_BASE_URL}property`, {
