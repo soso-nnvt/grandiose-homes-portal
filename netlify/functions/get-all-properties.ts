@@ -7,13 +7,6 @@ import { Buffer } from "buffer";
  * Standardizes CORS headers and handles preflight requests.
  */
 
-
-const response = await axios.get(WP_BASE_URL);
-console.log("RAW BODY:", response.data); 
-// This will appear in your Netlify Function Logs in the dashboard.
-
-
-
 export const handler: Handler = async (event) => {
   const CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*",
@@ -42,17 +35,32 @@ export const handler: Handler = async (event) => {
 
   try {
     const authHeader = getAuthHeader();
-    const headers: any = { "Content-Type": "application/json" };
+    const headers: any = { 
+      "Content-Type": "application/json",
+      "Cookie": "__test=565ab1bfb1b388eda096b7a3120ea422",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    };
     if (authHeader) headers["Authorization"] = authHeader;
 
     // Fetch properties with _embed parameter
     const response = await axios.get(`${WP_BASE_URL}property`, {
       params: { _embed: true },
       headers,
-      responseType: "json",
+      // We use 'text' or default to see the raw response if it's HTML
+      // but the user wants to see if it's still returning the JS challenge.
+      // If it's JSON, axios will parse it. If it's HTML, we'll see it.
     });
 
+    // Log the first 200 characters of the raw response data
+    const rawData = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+    console.log("RAW BODY (first 200 chars):", rawData.substring(0, 200));
+
     const data = response.data;
+
+    // If data is a string, it might be the HTML challenge
+    if (typeof data === 'string' && data.includes('<!doctype html')) {
+      throw new Error("Received HTML instead of JSON. Security challenge likely failed.");
+    }
 
     // Map WordPress data using Property Hive meta keys (_ph_)
     const properties = data.map((item: any) => {
