@@ -1,49 +1,91 @@
-import { Handler } from '@netlify/functions';
-import fetch from 'node-fetch';
-import { Buffer } from 'buffer';
+import { Handler } from "@netlify/functions";
+import axios from "axios";
+import { Buffer } from "buffer";
 
+/**
+ * Netlify Function to fetch and map all properties from WordPress.
+ * Standardizes CORS headers and handles preflight requests.
+ */
 export const handler: Handler = async (event) => {
+  const CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  };
+
+  // Handle OPTIONS preflight
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 204,
+      headers: CORS_HEADERS,
+      body: "",
+    };
+  }
+
   const WP_AUTH_USERNAME = process.env.WP_AUTH_USERNAME;
   const WP_AUTH_APP_PASSWORD = process.env.WP_AUTH_APP_PASSWORD;
-  const WP_BASE_URL = process.env.WP_BASE_URL || 'https://demorealestate.iceiy.com/wp-json/wp/v2/';
+  const WP_BASE_URL = process.env.WP_BASE_URL || "https://demorealestate.iceiy.com/wp-json/wp/v2/";
 
-  const auth = 'Basic ' + Buffer.from(WP_AUTH_USERNAME + ':' + WP_AUTH_APP_PASSWORD).toString('base64');
+  const getAuthHeader = () => {
+    if (!WP_AUTH_USERNAME || !WP_AUTH_APP_PASSWORD) return null;
+    const token = Buffer.from(`${WP_AUTH_USERNAME}:${WP_AUTH_APP_PASSWORD}`).toString("base64");
+    return `Basic ${token}`;
+  };
 
   try {
-    const response = await fetch(`${WP_BASE_URL}property?_embed`, {
-      headers: {
-        'Authorization': auth,
-      },
+    const authHeader = getAuthHeader();
+    const headers: any = { "Content-Type": "application/json" };
+    if (authHeader) headers["Authorization"] = authHeader;
+
+    // Fetch properties with _embed parameter
+    const response = await axios.get(`${WP_BASE_URL}property`, {
+      params: { _embed: true },
+      headers,
+      responseType: "json",
     });
 
-    if (!response.ok) {
+    const data = response.data;
+
+    // Map WordPress data using Property Hive meta keys (_ph_)
+    const properties = data.map((item: any) => {
+      // Warning if _embedded is missing
+      if (!item._embedded) {
+        console.warn(`Warning: _embedded field missing for property ${item.id}. Ensure ?_embed=true is used.`);
+      }
+
       return {
-        statusCode: 200,
-        body: JSON.stringify({ error: true, message: `Backend returned ${response.status}` }),
+        id: item.id,
+        slug: item.slug,
+        title: item.title?.rendered || "Untitled Property",
+        // Using _ph_ meta keys as per Property Hive schema
+        price: item.meta?._ph_price_text || item.meta?.price || "Price on Application",
+        bedrooms: parseInt(item.meta?._ph_bedrooms || item.meta?.bedrooms || "0"),
+        address: item.meta?._ph_address_display || item.meta?.address_street || "Address not available",
+        image: item._embedded?.["wp:featuredmedia"]?.[0]?.source_url || "https://picsum.photos/seed/property/800/600",
+        status: item.meta?._ph_status || (item.status === "publish" ? "Available" : item.status),
       };
-    }
-
-    const data: any = await response.json();
-
-    const properties = data.map((item: any) => ({
-      id: item.id,
-      slug: item.slug,
-      title: item.title.rendered,
-      price: item.meta?._ph_price_text || 'Price on Application',
-      bedrooms: item.meta?._ph_bedrooms || 0,
-      address: item.meta?._ph_address_display || 'Lagos, Nigeria',
-      image: item._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
-      status: item.meta?._ph_status || 'Available',
-    }));
+    });
 
     return {
       statusCode: 200,
+      headers: {
+        ...CORS_HEADERS,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(properties),
     };
   } catch (error: any) {
+    console.error("Netlify Function Error:", error.response?.data || error.message);
+    const status = error.response?.status || 500;
+    const message = error.response?.data?.message || error.message || "Internal Server Error";
+
     return {
-      statusCode: 200,
-      body: JSON.stringify({ error: true, message: error.message }),
+      statusCode: status,
+      headers: {
+        ...CORS_HEADERS,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ error: message, details: error.response?.data }),
     };
   }
 };

@@ -7,6 +7,20 @@ import { Buffer } from "buffer";
  * Handles authentication and error mapping.
  */
 export const handler: Handler = async (event, context) => {
+  const CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  };
+
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 204,
+      headers: CORS_HEADERS,
+      body: "",
+    };
+  }
+
   const WP_BASE_URL = process.env.WP_BASE_URL || "https://demorealestate.iceiy.com/wp-json/wp/v2/";
   const WP_AUTH_USERNAME = process.env.WP_AUTH_USERNAME;
   const WP_AUTH_APP_PASSWORD = process.env.WP_AUTH_APP_PASSWORD;
@@ -25,12 +39,13 @@ export const handler: Handler = async (event, context) => {
     const response = await axios.get(`${WP_BASE_URL}property`, {
       params: { ...event.queryStringParameters, _embed: true },
       headers,
+      responseType: "json",
     });
 
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "*",
+        ...CORS_HEADERS,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(response.data),
@@ -43,7 +58,7 @@ export const handler: Handler = async (event, context) => {
     return {
       statusCode: status,
       headers: {
-        "Access-Control-Allow-Origin": "*",
+        ...CORS_HEADERS,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ error: message, details: error.response?.data }),
