@@ -6,6 +6,14 @@ import { Buffer } from "buffer";
  * Netlify Function to fetch and map all properties from WordPress.
  * Standardizes CORS headers and handles preflight requests.
  */
+
+
+const response = await axios.get(WP_BASE_URL);
+console.log("RAW BODY:", response.data); 
+// This will appear in your Netlify Function Logs in the dashboard.
+
+
+
 export const handler: Handler = async (event) => {
   const CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*",
