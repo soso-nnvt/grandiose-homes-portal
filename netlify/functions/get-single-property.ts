@@ -61,25 +61,38 @@ export const handler: Handler = async (event) => {
 
     const item = response.data;
 
-    // Warning if _embedded is missing
-    if (!item._embedded) {
-      console.warn(`Warning: _embedded field missing for property ${item.id}. Ensure ?_embed=true is used.`);
-    }
+    // 1. Address Construction
+    const street = item.address_street || "Address not available";
+    const city = item.address_three || "";
+    const address = `${street} ${city}`.trim();
 
-    // Map WordPress data using Property Hive meta keys (_ph_)
+    // 2. Price Logic
+    const price = item.price_formatted || item.price_actual || "Price on Application";
+
+    // 3. Numeric Fields
+    const bedrooms = parseInt(item.bedrooms) || 0;
+    const bathrooms = parseInt(item.bathrooms) || 0;
+
+    // 4. Image Handling
+    const image = item.images?.[0]?.url || "https://picsum.photos/seed/property/800/600";
+    const gallery = item.images?.map((img: any) => img.url) || [image];
+
+    // 5. Availability
+    const status = item.availability || "Available";
+
+    // Map WordPress data
     const property = {
       id: item.id,
       slug: item.slug,
       title: item.title?.rendered || "Untitled Property",
-      content: item.content?.rendered || "",
-      price: item.meta?._ph_price_text || item.meta?.price || "Price on Application",
-      bedrooms: parseInt(item.meta?._ph_bedrooms || item.meta?.bedrooms || "0"),
-      bathrooms: parseInt(item.meta?._ph_bathrooms || item.meta?.bathrooms || "0"),
-      address: item.meta?._ph_address_display || item.meta?.address_street || "Address not available",
-      image: item._embedded?.["wp:featuredmedia"]?.[0]?.source_url || "https://picsum.photos/seed/property/800/600",
-      gallery: item.meta?._ph_gallery || [],
-      virtual_tour: item.meta?._ph_virtual_tour_url || item.meta?.virtual_tour || "",
-      status: item.meta?._ph_status || (item.status === "publish" ? "Available" : item.status),
+      content: item.description || item.content?.rendered || "",
+      price,
+      bedrooms,
+      bathrooms,
+      address,
+      image,
+      gallery,
+      status,
     };
 
     return {

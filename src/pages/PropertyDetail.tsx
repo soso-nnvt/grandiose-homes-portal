@@ -44,7 +44,7 @@ export function PropertyDetail() {
         const propertyData = Array.isArray(data) ? data[0] : data;
         if (!propertyData) throw new Error('Property not found');
 
-        setProperty(mapWPProperty(propertyData));
+        setProperty(propertyData);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -68,7 +68,7 @@ export function PropertyDetail() {
     };
 
     try {
-      const response = await fetch('/.netlify/functions/submit-enquiry', {
+      const response = await fetch('/api/submit-enquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

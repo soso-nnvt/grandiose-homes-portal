@@ -1,4 +1,14 @@
 [[redirects]]
+  from = "/api/properties"
+  to = "/.netlify/functions/properties"
+  status = 200
+
+[[redirects]]
+  from = "/api/submit-enquiry"
+  to = "/.netlify/functions/submit-enquiry"
+  status = 200
+
+[[redirects]]
   from = "/.netlify/functions/*"
   to = "/.netlify/functions/:splat"
   status = 200

@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
+import { mapWPProperty } from "./src/lib/wp-mapper.ts";
 
 dotenv.config();
 
@@ -53,9 +54,14 @@ app.get("/api/properties", async (req, res) => {
       headers,
     });
 
+    // Map the data before sending it to the frontend
+    const mappedData = Array.isArray(response.data) 
+      ? response.data.map(mapWPProperty) 
+      : [];
+
     // Add CORS header explicitly as requested
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.json(response.data);
+    res.json(mappedData);
   } catch (error: any) {
     console.error("WP API Error:", error.response?.data || error.message);
     const status = error.response?.status || 500;
@@ -84,6 +90,32 @@ app.get("/api/offices", async (req, res) => {
     const status = error.response?.status || 500;
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.status(status).json({ error: error.message });
+  }
+});
+
+// API Bridge for Enquiry Submission
+app.post("/api/submit-enquiry", async (req, res) => {
+  try {
+    const authHeader = getAuthHeader();
+    const headers: any = {
+      "Content-Type": "application/json",
+      "X-Pantheon-Staging": "1",
+    };
+    if (authHeader) {
+      headers["Authorization"] = authHeader;
+    }
+
+    const response = await axios.post(`${WP_BASE_URL}enquiry`, req.body, {
+      headers,
+    });
+
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.status(201).json({ success: true, data: response.data });
+  } catch (error: any) {
+    console.error("Enquiry Error:", error.response?.data || error.message);
+    const status = error.response?.status || 500;
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.status(status).json({ error: error.message, details: error.response?.data });
   }
 });
 

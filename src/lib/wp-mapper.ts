@@ -1,23 +1,34 @@
 /**
  * Maps WordPress Property Hive API response to the application's Property interface.
+ * This version handles the flat JSON structure where custom fields are at the root.
  */
 export function mapWPProperty(wpProperty: any) {
-  const { id, slug, title, content, _embedded, virtual_tour } = wpProperty;
+  const { 
+    id, 
+    slug, 
+    title, 
+    content, 
+    price_formatted, 
+    price_actual, 
+    bedrooms, 
+    bathrooms, 
+    address_street, 
+    address_three, 
+    availability, 
+    images 
+  } = wpProperty;
 
-  // Property Hive fields can be top-level or in meta depending on REST API configuration
-  const meta = wpProperty.meta || {};
-  const price = wpProperty.price || meta.price || 'Price on Application';
-  const bedrooms = wpProperty.bedrooms || meta.bedrooms || 0;
-  const bathrooms = wpProperty.bathrooms || meta.bathrooms || 0;
-  const address_street = wpProperty.address_street || meta.address_street || '';
-  const address_postcode = wpProperty.address_postcode || meta.address_postcode || '';
+  // 1. Address Construction
+  const street = address_street || 'Address not available';
+  const city = address_three || '';
+  const address = `${street} ${city}`.trim();
 
-  // Extract featured image from embedded data
-  const featuredMedia = _embedded?.['wp:featuredmedia']?.[0];
-  const image = featuredMedia?.source_url || 'https://picsum.photos/seed/property/800/600';
+  // 2. Price Logic
+  const price = price_formatted || price_actual || 'Price on Application';
 
-  // Extract gallery images if available
-  const gallery = [image];
+  // 3. Image Handling
+  const image = images?.[0]?.url || 'https://picsum.photos/seed/property/800/600';
+  const gallery = images?.map((img: any) => img.url) || [image];
 
   return {
     id,
@@ -27,10 +38,9 @@ export function mapWPProperty(wpProperty: any) {
     price,
     bedrooms: parseInt(bedrooms) || 0,
     bathrooms: parseInt(bathrooms) || 0,
-    address: `${address_street} ${address_postcode}`.trim() || 'Address not available',
+    address,
     image,
     gallery,
-    virtual_tour: virtual_tour || meta.virtual_tour || '',
-    status: wpProperty.status === 'publish' ? 'Available' : wpProperty.status,
+    status: availability || 'Available',
   };
 }
