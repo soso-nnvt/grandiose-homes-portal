@@ -19,6 +19,14 @@ export function mapWPProperty(item: any) {
       gallery: item.gallery || [item.image],
       status: item.status || 'Available',
       content: item.content || '',
+      property_type: item.property_type,
+      availability: item.availability,
+      reception_rooms: item.reception_rooms,
+      parking: item.parking,
+      furnished: item.furnished,
+      deposit: item.deposit,
+      available_date: item.available_date,
+      tenure: item.tenure,
     };
   }
 
@@ -41,5 +49,13 @@ export function mapWPProperty(item: any) {
     image,
     gallery: item.images?.map((img: any) => img.url) || [image],
     status: item.availability || 'Available',
+    property_type: item.property_type,
+    availability: item.availability,
+    reception_rooms: item.reception_rooms,
+    parking: item.parking,
+    furnished: item.furnished,
+    deposit: item.deposit,
+    available_date: item.available_date,
+    tenure: item.tenure,
   };
 }

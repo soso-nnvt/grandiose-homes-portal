@@ -85,6 +85,14 @@ export const handler: Handler = async (event) => {
       image,
       gallery,
       status,
+      property_type: item.property_type,
+      availability: item.availability,
+      reception_rooms: item.reception_rooms,
+      parking: item.parking,
+      furnished: item.furnished,
+      deposit: item.deposit,
+      available_date: item.available_date,
+      tenure: item.tenure,
     };
 
     return {

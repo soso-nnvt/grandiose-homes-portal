@@ -18,6 +18,14 @@ interface Property {
   gallery: string[];
   virtual_tour: string;
   status: string;
+  property_type?: string;
+  availability?: string;
+  reception_rooms?: string;
+  parking?: string;
+  furnished?: string;
+  deposit?: string;
+  available_date?: string;
+  tenure?: string;
 }
 
 export function PropertyDetail() {
@@ -163,6 +171,28 @@ export function PropertyDetail() {
               
               <div className="prose prose-lg max-w-none text-forest-950/70 leading-relaxed mb-12">
                 <div dangerouslySetInnerHTML={{ __html: property.content }} />
+              </div>
+
+              {/* Property Specifications */}
+              <div className="mb-12">
+                <h3 className="text-2xl font-serif font-black mb-6">Property Specifications</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { label: "Property Type", value: property.property_type },
+                    { label: "Availability", value: property.availability || property.status },
+                    { label: "Reception Rooms", value: property.reception_rooms },
+                    { label: "Parking", value: property.parking },
+                    { label: "Furnished", value: property.furnished },
+                    { label: "Deposit", value: property.deposit },
+                    { label: "Available Date", value: property.available_date },
+                    { label: "Tenure", value: property.tenure },
+                  ].filter(spec => spec.value).map((spec, i) => (
+                    <div key={i} className="flex items-center justify-between p-4 bg-white rounded-2xl luxury-shadow border border-black/5">
+                      <span className="text-xs font-black uppercase tracking-widest text-forest-950/40">{spec.label}</span>
+                      <span className="text-sm font-bold text-forest-950">{spec.value}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {property.virtual_tour && (

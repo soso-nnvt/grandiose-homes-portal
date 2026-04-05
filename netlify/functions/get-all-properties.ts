@@ -42,9 +42,12 @@ export const handler: Handler = async (event) => {
     };
     if (authHeader) headers["Authorization"] = authHeader;
 
-    // Fetch properties with _embed parameter
+    // Fetch properties with _embed parameter and pagination fix
     const response = await axios.get(`${WP_BASE_URL}property`, {
-      params: { _embed: true },
+      params: { 
+        _embed: true,
+        per_page: 100
+      },
       headers,
       // We remove responseType: "json" temporarily to handle potential HTML responses gracefully
     });
@@ -93,6 +96,14 @@ export const handler: Handler = async (event) => {
           address,
           image,
           status,
+          property_type: item.property_type,
+          availability: item.availability,
+          reception_rooms: item.reception_rooms,
+          parking: item.parking,
+          furnished: item.furnished,
+          deposit: item.deposit,
+          available_date: item.available_date,
+          tenure: item.tenure,
         };
       } catch (mapError: any) {
         console.error(`Mapping failed for property ID: ${item?.id || "unknown"}. Error: ${mapError.message}`);

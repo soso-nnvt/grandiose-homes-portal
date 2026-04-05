@@ -14,6 +14,8 @@ interface Property {
   address: string;
   image: string;
   status: string;
+  property_type?: string;
+  availability?: string;
 }
 
 export function Properties() {
@@ -32,9 +34,8 @@ export function Properties() {
           throw new Error(data.error || 'Failed to fetch properties');
         }
         
-        // Map the WordPress data to our application's Property interface
-        const mappedProperties = Array.isArray(data) ? data.map(mapWPProperty) : [];
-        setProperties(mappedProperties);
+        // The API now returns mapped data directly
+        setProperties(Array.isArray(data) ? data : []);
       } catch (err: any) {
         console.error('Fetch Error:', err);
         setError(err.message);
@@ -108,13 +109,20 @@ export function Properties() {
                   referrerPolicy="no-referrer"
                 />
                 <div className="absolute top-4 right-4 bg-lime-500 text-forest-950 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">
-                  {property.status}
+                  {property.availability || property.status}
                 </div>
               </div>
               <div className="p-8">
-                <div className="flex items-center gap-2 text-forest-950/40 text-xs font-bold uppercase tracking-widest mb-2">
-                  <MapPin size={14} className="text-lime-500" />
-                  {property.address}
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2 text-forest-950/40 text-xs font-bold uppercase tracking-widest">
+                    <MapPin size={14} className="text-lime-500" />
+                    {property.address}
+                  </div>
+                  {property.property_type && (
+                    <span className="text-[10px] font-black uppercase tracking-widest bg-forest-950/5 px-2 py-0.5 rounded text-forest-950/40">
+                      {property.property_type}
+                    </span>
+                  )}
                 </div>
                 <h3 className="text-2xl font-serif font-black mb-4 group-hover:text-lime-500 transition-colors">
                   {property.title}
