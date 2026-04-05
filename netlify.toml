@@ -1,4 +1,9 @@
 [[redirects]]
+  from = "/api/property/*"
+  to = "/.netlify/functions/get-single-property?id=:splat"
+  status = 200
+
+[[redirects]]
   from = "/api/properties"
   to = "/.netlify/functions/properties"
   status = 200

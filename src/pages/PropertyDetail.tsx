@@ -32,19 +32,16 @@ export function PropertyDetail() {
   useEffect(() => {
     async function fetchProperty() {
       try {
-        // Fetch from the Express API bridge
-        const response = await fetch(`/api/properties?include=${id}`);
+        // Fetch from the Netlify function bridge
+        const response = await fetch(`/.netlify/functions/get-single-property?id=${id}`);
         const data = await response.json();
 
         if (!response.ok) {
           throw new Error(data.error || 'Failed to fetch property details');
         }
         
-        // The API returns an array even for single ID request
-        const propertyData = Array.isArray(data) ? data[0] : data;
-        if (!propertyData) throw new Error('Property not found');
-
-        setProperty(propertyData);
+        // The API returns the mapped property directly
+        setProperty(data);
       } catch (err: any) {
         setError(err.message);
       } finally {

@@ -61,23 +61,15 @@ export const handler: Handler = async (event) => {
 
     const item = response.data;
 
-    // 1. Address Construction
+    // Mapping logic (Flat structure)
     const street = item.address_street || "Address not available";
     const city = item.address_three || "";
     const address = `${street} ${city}`.trim();
-
-    // 2. Price Logic
     const price = item.price_formatted || item.price_actual || "Price on Application";
-
-    // 3. Numeric Fields
     const bedrooms = parseInt(item.bedrooms) || 0;
     const bathrooms = parseInt(item.bathrooms) || 0;
-
-    // 4. Image Handling
     const image = item.images?.[0]?.url || "https://picsum.photos/seed/property/800/600";
     const gallery = item.images?.map((img: any) => img.url) || [image];
-
-    // 5. Availability
     const status = item.availability || "Available";
 
     // Map WordPress data

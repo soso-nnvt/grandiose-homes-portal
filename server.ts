@@ -76,6 +76,35 @@ app.get("/api/properties", async (req, res) => {
   }
 });
 
+// API Bridge for Single Property
+app.get("/api/property/:id", async (req, res) => {
+  try {
+    const authHeader = getAuthHeader();
+    const headers: any = {
+      "Content-Type": "application/json",
+      "X-Pantheon-Staging": "1",
+    };
+    if (authHeader) {
+      headers["Authorization"] = authHeader;
+    }
+
+    const { id } = req.params;
+    const response = await axios.get(`${WP_BASE_URL}property/${id}`, {
+      params: { _embed: true },
+      headers,
+    });
+
+    const mappedData = mapWPProperty(response.data);
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.json(mappedData);
+  } catch (error: any) {
+    console.error("WP API Single Error:", error.response?.data || error.message);
+    const status = error.response?.status || 500;
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.status(status).json({ error: error.message });
+  }
+});
+
 // API Bridge for Offices
 app.get("/api/offices", async (req, res) => {
   try {
