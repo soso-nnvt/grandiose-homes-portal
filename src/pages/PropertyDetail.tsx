@@ -1,6 +1,6 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { SEO } from '../components/SEO';
 import { 
   MapPin, Bed, Bath, ArrowLeft, Send, Car, Key, Trees, Wallet, 
@@ -8,6 +8,7 @@ import {
   Hash, Shield, Globe, CheckCircle2
 } from 'lucide-react';
 import { formatPropertyPrice } from '../lib/utils';
+import { Skeleton } from '../components/Skeleton';
 
 interface Property {
   id: number;
@@ -57,6 +58,67 @@ interface Property {
   };
 }
 
+function PropertyDetailSkeleton() {
+  return (
+    <div className="container mx-auto px-6 pt-32 pb-24">
+      <div className="mb-12">
+        <Skeleton className="w-32 h-4" />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+        <div className="lg:col-span-8">
+          <Skeleton className="w-full h-[500px] mb-12" />
+          <div className="grid grid-cols-4 gap-4 mb-12">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-24" />
+            ))}
+          </div>
+          <div className="mb-12">
+            <div className="flex gap-4 mb-6">
+              <Skeleton className="w-24 h-6 rounded-full" />
+              <Skeleton className="w-24 h-6 rounded-full" />
+            </div>
+            <Skeleton className="w-3/4 h-16 mb-8" />
+            <div className="flex gap-8 mb-12">
+              <Skeleton className="w-40 h-6" />
+              <Skeleton className="w-32 h-6" />
+              <Skeleton className="w-32 h-6" />
+            </div>
+            <div className="flex gap-4 mb-12">
+              <Skeleton className="w-48 h-12" />
+              <Skeleton className="w-24 h-8" />
+            </div>
+            <div className="space-y-4 mb-12">
+              <Skeleton className="w-full h-4" />
+              <Skeleton className="w-full h-4" />
+              <Skeleton className="w-full h-4" />
+              <Skeleton className="w-3/4 h-4" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className="h-32" />
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="lg:col-span-4">
+          <div className="bg-white rounded-3xl p-8 luxury-shadow border border-black/5">
+            <Skeleton className="w-1/2 h-8 mb-8" />
+            <div className="space-y-6">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i}>
+                  <Skeleton className="w-24 h-3 mb-2" />
+                  <Skeleton className="w-full h-12" />
+                </div>
+              ))}
+              <Skeleton className="w-full h-16" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function PropertyDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -82,7 +144,8 @@ export function PropertyDetail() {
       } catch (err: any) {
         setError(err.message);
       } finally {
-        setLoading(false);
+        // Artificial delay for smoother transition
+        setTimeout(() => setLoading(false), 800);
       }
     }
 
@@ -117,37 +180,50 @@ export function PropertyDetail() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-ivory">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-lime-500"></div>
-      </div>
-    );
-  }
-
-  if (error || !property) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-ivory">
-        <div className="text-center">
-          <h2 className="text-4xl font-serif font-black text-forest-950 mb-4">{error || 'Property Not Found'}</h2>
-          <button 
-            onClick={() => navigate('/properties')}
-            className="inline-flex items-center gap-2 text-lime-500 font-black uppercase tracking-widest text-sm"
-          >
-            <ArrowLeft size={18} />
-            Back to Portfolio
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <main className="min-h-screen bg-ivory text-forest-950 pt-32 pb-24">
-      <SEO 
-        title={`${property.title} | Grandiose Homes`}
-        description={`Detailed view of ${property.title}. Price: ${property.price}. Located in ${property.address}.`}
-      />
+    <AnimatePresence mode="wait">
+      {loading ? (
+        <motion.main 
+          key="skeleton"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="min-h-screen bg-ivory"
+        >
+          <PropertyDetailSkeleton />
+        </motion.main>
+      ) : error || !property ? (
+        <motion.div 
+          key="error"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="min-h-screen flex items-center justify-center bg-ivory"
+        >
+          <div className="text-center">
+            <h2 className="text-4xl font-serif font-black text-forest-950 mb-4">{error || 'Property Not Found'}</h2>
+            <button 
+              onClick={() => navigate('/properties')}
+              className="inline-flex items-center gap-2 text-lime-500 font-black uppercase tracking-widest text-sm"
+            >
+              <ArrowLeft size={18} />
+              Back to Portfolio
+            </button>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.main 
+          key="content"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="min-h-screen bg-ivory text-forest-950 pt-32 pb-24"
+        >
+          <SEO 
+            title={`${property.title} | Grandiose Homes`}
+            description={`Detailed view of ${property.title}. Price: ${property.price}. Located in ${property.address}.`}
+          />
       <div className="container mx-auto px-6">
         <button 
           onClick={() => navigate('/properties')}
@@ -382,6 +458,8 @@ export function PropertyDetail() {
           </div>
         </div>
       </div>
-    </main>
+    </motion.main>
+    )}
+    </AnimatePresence>
   );
 }

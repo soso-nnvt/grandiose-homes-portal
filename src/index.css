@@ -10,6 +10,17 @@
   --color-lime-500: #32CD32;
   --color-red-600: #CC0000;
   --color-ivory: #FAFAFA;
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  --animate-shimmer: shimmer 2s infinite linear;
 }
 
 body {

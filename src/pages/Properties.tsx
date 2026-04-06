@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/SEO';
 import { MapPin, Bed, ArrowRight } from 'lucide-react';
 import { formatPropertyPrice } from '../lib/utils';
+import { Skeleton } from '../components/Skeleton';
 
 interface Property {
   id: number;
@@ -19,6 +20,39 @@ interface Property {
   status: string;
   property_type?: string;
   availability?: string;
+}
+
+function PropertyCardSkeleton() {
+  return (
+    <div className="bg-white rounded-3xl overflow-hidden luxury-shadow border border-black/5">
+      <div className="relative h-64 overflow-hidden">
+        <Skeleton className="w-full h-full rounded-none" />
+        <div className="absolute top-4 right-4">
+          <Skeleton className="w-20 h-6 rounded-full" />
+        </div>
+      </div>
+      <div className="p-8">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Skeleton className="w-4 h-4 rounded-full" />
+            <Skeleton className="w-32 h-3" />
+          </div>
+          <Skeleton className="w-16 h-4" />
+        </div>
+        <Skeleton className="w-3/4 h-8 mb-6" />
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Skeleton className="w-5 h-5 rounded-full" />
+              <Skeleton className="w-4 h-4" />
+            </div>
+          </div>
+          <Skeleton className="w-24 h-8" />
+        </div>
+        <Skeleton className="w-28 h-4" />
+      </div>
+    </div>
+  );
 }
 
 export function Properties() {
@@ -43,20 +77,13 @@ export function Properties() {
         console.error('Fetch Error:', err);
         setError(err.message);
       } finally {
-        setLoading(false);
+        // Artificial delay for smoother transition
+        setTimeout(() => setLoading(false), 800);
       }
     }
 
     fetchProperties();
   }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-ivory">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-lime-500"></div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -96,14 +123,28 @@ export function Properties() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {properties.map((property, i) => (
-            <motion.div
-              key={property.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="group bg-white rounded-3xl overflow-hidden luxury-shadow border border-black/5"
-            >
+          <AnimatePresence mode="wait">
+            {loading ? (
+              Array.from({ length: 6 }).map((_, i) => (
+                <motion.div
+                  key={`skeleton-${i}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <PropertyCardSkeleton />
+                </motion.div>
+              ))
+            ) : (
+              properties.map((property, i) => (
+                <motion.div
+                  key={property.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  className="group bg-white rounded-3xl overflow-hidden luxury-shadow border border-black/5"
+                >
               <div className="relative h-64 overflow-hidden">
                 <img
                   src={property.image || 'https://picsum.photos/seed/property/800/600'}
@@ -150,7 +191,8 @@ export function Properties() {
                 </Link>
               </div>
             </motion.div>
-          ))}
+          )))}
+          </AnimatePresence>
         </div>
 
         {properties.length === 0 && (
