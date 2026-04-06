@@ -69,9 +69,9 @@ export const handler: Handler = async (event) => {
     const properties = data.map((item: any) => {
       try {
         // 1. Address Construction
-        const street = item.address_street || "Address not available";
-        const city = item.address_three || "";
-        const address = `${street} ${city}`.trim();
+        const address = [item.address_street, item.address_two, item.address_three, item.address_four, item.address_postcode]
+          .filter(Boolean)
+          .join(', ') || 'Address not available';
 
         // 2. Price Logic
         const price = item.price_formatted || item.price_actual || "Price on Application";
@@ -79,6 +79,7 @@ export const handler: Handler = async (event) => {
         // 3. Numeric Fields
         const bedrooms = parseInt(item.bedrooms) || 0;
         const bathrooms = parseInt(item.bathrooms) || 0;
+        const reception_rooms = parseInt(item.reception_rooms) || 0;
 
         // 4. Image Handling
         const image = item.images?.[0]?.url || "https://picsum.photos/seed/property/800/600";
@@ -90,26 +91,47 @@ export const handler: Handler = async (event) => {
           id: item.id,
           slug: item.slug,
           title: item.title?.rendered || "Untitled Property",
+          content: item.content?.rendered || "",
+          description: item.description || item.content?.rendered || "",
           price,
+          price_actual: item.price_actual,
+          price_formatted: item.price_formatted,
+          price_qualifier: item.price_qualifier,
+          currency: item.currency,
+          rent_frequency: item.rent_frequency,
+          deposit: item.deposit,
+          council_tax_band: item.council_tax_band,
           bedrooms,
           bathrooms,
-          address,
-          image,
-          status,
+          reception_rooms,
           property_type: item.property_type,
-          availability: item.availability,
-          reception_rooms: item.reception_rooms,
-          parking: item.parking,
-          furnished: item.furnished,
-          deposit: item.deposit,
-          available_date: item.available_date,
           tenure: item.tenure,
-          price_qualifier: item.price_qualifier,
-          rent_frequency: item.rent_frequency,
+          address,
+          address_street: item.address_street,
+          address_two: item.address_two,
+          address_three: item.address_three,
+          address_four: item.address_four,
+          address_postcode: item.address_postcode,
+          address_country: item.address_country,
+          latitude: item.latitude,
+          longitude: item.longitude,
+          image,
+          gallery: item.images?.map((img: any) => img.url) || [image],
+          features: Array.isArray(item.features) ? item.features : [],
+          parking: item.parking,
           outside_space: item.outside_space,
+          furnished: item.furnished,
+          availability: item.availability,
+          status,
           on_market: item.on_market,
+          available_date: item.available_date,
+          sale_by: item.sale_by,
           marketing_flag: item.marketing_flag,
-          description: item.description || item.content?.rendered || "",
+          reference_number: item.reference_number,
+          negotiator: item.negotiator ? {
+            name: item.negotiator.name,
+            email: item.negotiator.email
+          } : null,
         };
       } catch (mapError: any) {
         console.error(`Mapping failed for property ID: ${item?.id || "unknown"}. Error: ${mapError.message}`);

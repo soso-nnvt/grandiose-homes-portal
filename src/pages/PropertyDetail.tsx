@@ -2,8 +2,11 @@ import { useState, useEffect, FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { SEO } from '../components/SEO';
-import { MapPin, Bed, Bath, ArrowLeft, Send, Car, Key, Trees, Wallet, Armchair, Layout, Calendar, Info, Star } from 'lucide-react';
-import { mapWPProperty } from '../lib/wp-mapper';
+import { 
+  MapPin, Bed, Bath, ArrowLeft, Send, Car, Key, Trees, Wallet, 
+  Armchair, Layout, Calendar, Info, Star, Compass, Coins, User, 
+  Hash, Shield, Globe, CheckCircle2
+} from 'lucide-react';
 
 interface Property {
   id: number;
@@ -12,26 +15,45 @@ interface Property {
   content: string;
   description?: string;
   price: string;
+  price_actual?: string;
+  price_formatted?: string;
   price_qualifier?: string;
+  currency?: string;
   rent_frequency?: string;
+  deposit?: string;
+  council_tax_band?: string;
   bedrooms: number;
   bathrooms: number;
+  reception_rooms?: number;
+  property_type?: string;
+  tenure?: string;
   address: string;
+  address_street?: string;
+  address_two?: string;
+  address_three?: string;
+  address_four?: string;
+  address_postcode?: string;
+  address_country?: string;
+  latitude?: string;
+  longitude?: string;
   image: string;
   gallery: string[];
+  features?: string[];
   virtual_tour: string;
   status: string;
-  property_type?: string;
   availability?: string;
-  reception_rooms?: string;
   parking?: string;
-  furnished?: string;
-  deposit?: string;
-  available_date?: string;
-  tenure?: string;
   outside_space?: string;
+  furnished?: string;
   on_market?: string;
+  available_date?: string;
+  sale_by?: string;
   marketing_flag?: string;
+  reference_number?: string;
+  negotiator?: {
+    name: string;
+    email: string;
+  };
 }
 
 export function PropertyDetail() {
@@ -204,10 +226,25 @@ export function PropertyDetail() {
                 <div dangerouslySetInnerHTML={{ __html: property.description || property.content }} />
               </div>
 
-              {/* Property Specifications */}
+              {/* Property Highlights */}
+              {property.features && property.features.length > 0 && (
+                <div className="mb-12">
+                  <h3 className="text-2xl font-serif font-black mb-6">Property Highlights</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {property.features.map((feature, i) => (
+                      <div key={i} className="flex items-center gap-3 text-forest-950/70 font-bold">
+                        <CheckCircle2 size={18} className="text-lime-500 flex-shrink-0" />
+                        {feature}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Property Specifications Bento Grid */}
               <div className="mb-12">
                 <h3 className="text-2xl font-serif font-black mb-8">Property Specifications</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {[
                     { label: "Tenure", value: property.tenure, icon: Key },
                     { label: "Parking", value: property.parking, icon: Car },
@@ -217,10 +254,14 @@ export function PropertyDetail() {
                     { label: "Deposit", value: property.deposit, icon: Wallet },
                     { label: "Available From", value: property.available_date, icon: Calendar },
                     { label: "On Market Since", value: property.on_market, icon: Info },
-                  ].filter(spec => spec.value).map((spec, i) => (
-                    <div key={i} className="bg-white p-6 rounded-3xl luxury-shadow border border-black/5 flex flex-col gap-4">
-                      <div className="w-10 h-10 bg-ivory rounded-2xl flex items-center justify-center text-lime-500">
-                        <spec.icon size={20} />
+                    { label: "Council Tax", value: property.council_tax_band, icon: Shield },
+                    { label: "Reference", value: property.reference_number, icon: Hash },
+                    { label: "Sale By", value: property.sale_by, icon: User },
+                    { label: "Currency", value: property.currency, icon: Coins },
+                  ].filter(spec => spec.value && spec.value !== '0' && spec.value !== 0).map((spec, i) => (
+                    <div key={i} className="bg-white p-6 rounded-3xl luxury-shadow border border-black/5 flex flex-col gap-4 hover:border-lime-500/30 transition-colors group">
+                      <div className="w-12 h-12 bg-ivory rounded-2xl flex items-center justify-center text-lime-500 group-hover:bg-lime-500 group-hover:text-forest-950 transition-all duration-500">
+                        <spec.icon size={24} />
                       </div>
                       <div>
                         <span className="block text-[10px] font-black uppercase tracking-widest text-forest-950/40 mb-1">{spec.label}</span>
@@ -230,6 +271,60 @@ export function PropertyDetail() {
                   ))}
                 </div>
               </div>
+
+              {/* Location Details */}
+              <div className="mb-12">
+                <h3 className="text-2xl font-serif font-black mb-6">Location & Address</h3>
+                <div className="bg-white p-8 rounded-3xl luxury-shadow border border-black/5">
+                  <div className="flex items-start gap-6">
+                    <div className="w-16 h-16 bg-ivory rounded-2xl flex items-center justify-center text-lime-500 flex-shrink-0">
+                      <Compass size={32} />
+                    </div>
+                    <div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+                        {[
+                          { label: "Street", value: property.address_street },
+                          { label: "Area", value: property.address_two },
+                          { label: "City", value: property.address_three },
+                          { label: "County", value: property.address_four },
+                          { label: "Postcode", value: property.address_postcode },
+                          { label: "Country", value: property.address_country },
+                        ].filter(item => item.value).map((item, i) => (
+                          <div key={i} className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-forest-950/40 mb-1">{item.label}</span>
+                            <span className="text-sm font-bold text-forest-950">{item.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                      {property.latitude && property.longitude && (
+                        <div className="mt-8 pt-8 border-t border-black/5 flex items-center gap-4 text-xs font-bold text-forest-950/40">
+                          <Globe size={14} />
+                          Coordinates: {property.latitude}, {property.longitude}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Negotiator Info */}
+              {property.negotiator && (
+                <div className="mb-12">
+                  <h3 className="text-2xl font-serif font-black mb-6">Your Consultant</h3>
+                  <div className="bg-forest-950 p-8 rounded-3xl text-white flex items-center gap-6">
+                    <div className="w-16 h-16 bg-lime-500 rounded-full flex items-center justify-center text-forest-950">
+                      <User size={32} />
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-serif font-black">{property.negotiator.name}</h4>
+                      <p className="text-white/60 text-sm font-bold mb-2">Property Consultant</p>
+                      <a href={`mailto:${property.negotiator.email}`} className="text-lime-500 text-sm font-black uppercase tracking-widest hover:text-white transition-colors">
+                        {property.negotiator.email}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {property.virtual_tour && (
                 <div className="mb-12">

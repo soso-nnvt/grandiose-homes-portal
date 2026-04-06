@@ -50,6 +50,7 @@ app.get("/api/properties", async (req, res) => {
       params: {
         ...req.query,
         _embed: true, // Ensure images and terms are embedded
+        per_page: 100, // Pagination fix
       },
       headers,
     });
