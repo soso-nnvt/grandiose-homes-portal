@@ -104,6 +104,12 @@ export const handler: Handler = async (event) => {
           deposit: item.deposit,
           available_date: item.available_date,
           tenure: item.tenure,
+          price_qualifier: item.price_qualifier,
+          rent_frequency: item.rent_frequency,
+          outside_space: item.outside_space,
+          on_market: item.on_market,
+          marketing_flag: item.marketing_flag,
+          description: item.description || item.content?.rendered || "",
         };
       } catch (mapError: any) {
         console.error(`Mapping failed for property ID: ${item?.id || "unknown"}. Error: ${mapError.message}`);

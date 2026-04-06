@@ -2,7 +2,7 @@ import { useState, useEffect, FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { SEO } from '../components/SEO';
-import { MapPin, Bed, Bath, ArrowLeft, Send } from 'lucide-react';
+import { MapPin, Bed, Bath, ArrowLeft, Send, Car, Key, Trees, Wallet, Armchair, Layout, Calendar, Info, Star } from 'lucide-react';
 import { mapWPProperty } from '../lib/wp-mapper';
 
 interface Property {
@@ -10,7 +10,10 @@ interface Property {
   slug: string;
   title: string;
   content: string;
+  description?: string;
   price: string;
+  price_qualifier?: string;
+  rent_frequency?: string;
   bedrooms: number;
   bathrooms: number;
   address: string;
@@ -26,6 +29,9 @@ interface Property {
   deposit?: string;
   available_date?: string;
   tenure?: string;
+  outside_space?: string;
+  on_market?: string;
+  marketing_flag?: string;
 }
 
 export function PropertyDetail() {
@@ -152,6 +158,19 @@ export function PropertyDetail() {
             </div>
 
             <div className="mb-12">
+              <div className="flex items-center gap-4 mb-4">
+                {property.marketing_flag && (
+                  <span className="bg-forest-950 text-lime-500 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                    <Star size={12} fill="currentColor" />
+                    {property.marketing_flag}
+                  </span>
+                )}
+                {property.property_type && (
+                  <span className="bg-lime-500/10 text-lime-500 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">
+                    {property.property_type}
+                  </span>
+                )}
+              </div>
               <h1 className="text-4xl md:text-6xl font-serif font-black mb-6">{property.title}</h1>
               <div className="flex flex-wrap items-center gap-6 mb-8">
                 <div className="flex items-center gap-2 text-forest-950/60 font-bold">
@@ -167,29 +186,46 @@ export function PropertyDetail() {
                   {property.bathrooms} Bathrooms
                 </div>
               </div>
-              <div className="text-4xl font-black text-lime-500 mb-12">{property.price}</div>
+              <div className="flex items-baseline gap-2 mb-12">
+                <div className="text-4xl font-black text-lime-500">{property.price}</div>
+                {property.price_qualifier && (
+                  <div className="text-forest-950/40 text-sm font-bold uppercase tracking-widest">
+                    {property.price_qualifier}
+                  </div>
+                )}
+                {property.rent_frequency && (
+                  <div className="text-forest-950/40 text-sm font-bold uppercase tracking-widest">
+                    / {property.rent_frequency}
+                  </div>
+                )}
+              </div>
               
               <div className="prose prose-lg max-w-none text-forest-950/70 leading-relaxed mb-12">
-                <div dangerouslySetInnerHTML={{ __html: property.content }} />
+                <div dangerouslySetInnerHTML={{ __html: property.description || property.content }} />
               </div>
 
               {/* Property Specifications */}
               <div className="mb-12">
-                <h3 className="text-2xl font-serif font-black mb-6">Property Specifications</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <h3 className="text-2xl font-serif font-black mb-8">Property Specifications</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[
-                    { label: "Property Type", value: property.property_type },
-                    { label: "Availability", value: property.availability || property.status },
-                    { label: "Reception Rooms", value: property.reception_rooms },
-                    { label: "Parking", value: property.parking },
-                    { label: "Furnished", value: property.furnished },
-                    { label: "Deposit", value: property.deposit },
-                    { label: "Available Date", value: property.available_date },
-                    { label: "Tenure", value: property.tenure },
+                    { label: "Tenure", value: property.tenure, icon: Key },
+                    { label: "Parking", value: property.parking, icon: Car },
+                    { label: "Outside Space", value: property.outside_space, icon: Trees },
+                    { label: "Furnished", value: property.furnished, icon: Armchair },
+                    { label: "Reception Rooms", value: property.reception_rooms, icon: Layout },
+                    { label: "Deposit", value: property.deposit, icon: Wallet },
+                    { label: "Available From", value: property.available_date, icon: Calendar },
+                    { label: "On Market Since", value: property.on_market, icon: Info },
                   ].filter(spec => spec.value).map((spec, i) => (
-                    <div key={i} className="flex items-center justify-between p-4 bg-white rounded-2xl luxury-shadow border border-black/5">
-                      <span className="text-xs font-black uppercase tracking-widest text-forest-950/40">{spec.label}</span>
-                      <span className="text-sm font-bold text-forest-950">{spec.value}</span>
+                    <div key={i} className="bg-white p-6 rounded-3xl luxury-shadow border border-black/5 flex flex-col gap-4">
+                      <div className="w-10 h-10 bg-ivory rounded-2xl flex items-center justify-center text-lime-500">
+                        <spec.icon size={20} />
+                      </div>
+                      <div>
+                        <span className="block text-[10px] font-black uppercase tracking-widest text-forest-950/40 mb-1">{spec.label}</span>
+                        <span className="text-sm font-bold text-forest-950">{spec.value}</span>
+                      </div>
                     </div>
                   ))}
                 </div>
