@@ -3,13 +3,16 @@ import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/SEO';
 import { MapPin, Bed, ArrowRight } from 'lucide-react';
-import { mapWPProperty } from '../lib/wp-mapper';
+import { formatPropertyPrice } from '../lib/utils';
 
 interface Property {
   id: number;
   slug: string;
   title: string;
   price: string;
+  price_actual?: number;
+  currency?: string;
+  rent_frequency?: string;
   bedrooms: number;
   address: string;
   image: string;
@@ -135,7 +138,7 @@ export function Properties() {
                     </div>
                   </div>
                   <div className="text-2xl font-black text-lime-500">
-                    {property.price}
+                    {formatPropertyPrice(property.price_actual, property.currency, property.rent_frequency)}
                   </div>
                 </div>
                 <Link

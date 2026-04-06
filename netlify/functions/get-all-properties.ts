@@ -73,8 +73,22 @@ export const handler: Handler = async (event) => {
           .filter(Boolean)
           .join(', ') || 'Address not available';
 
-        // 2. Price Logic
-        const price = item.price_formatted || item.price_actual || "Price on Application";
+        // 2. Price Logic with HTML entity cleaning
+        const cleanPrice = (str: string) => {
+          if (!str) return '';
+          return str
+            .replace(/&pound;/g, '£')
+            .replace(/&euro;/g, '€')
+            .replace(/&amp;/g, '&')
+            .replace(/&quot;/g, '"')
+            .replace(/&#039;/g, "'")
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>');
+        };
+
+        const price = item.price_actual 
+          ? item.price_actual 
+          : (item.price_formatted ? cleanPrice(item.price_formatted) : 'Price on Application');
 
         // 3. Numeric Fields
         const bedrooms = parseInt(item.bedrooms) || 0;
@@ -94,10 +108,10 @@ export const handler: Handler = async (event) => {
           content: item.content?.rendered || "",
           description: item.description || item.content?.rendered || "",
           price,
-          price_actual: item.price_actual,
-          price_formatted: item.price_formatted,
+          price_actual: item.price_actual ? Number(item.price_actual) : undefined,
+          price_formatted: item.price_formatted ? cleanPrice(item.price_formatted) : '',
           price_qualifier: item.price_qualifier,
-          currency: item.currency,
+          currency: item.currency || 'GBP',
           rent_frequency: item.rent_frequency,
           deposit: item.deposit,
           council_tax_band: item.council_tax_band,

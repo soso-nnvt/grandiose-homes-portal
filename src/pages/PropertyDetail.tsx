@@ -7,6 +7,7 @@ import {
   Armchair, Layout, Calendar, Info, Star, Compass, Coins, User, 
   Hash, Shield, Globe, CheckCircle2
 } from 'lucide-react';
+import { formatPropertyPrice } from '../lib/utils';
 
 interface Property {
   id: number;
@@ -15,7 +16,7 @@ interface Property {
   content: string;
   description?: string;
   price: string;
-  price_actual?: string;
+  price_actual?: number;
   price_formatted?: string;
   price_qualifier?: string;
   currency?: string;
@@ -209,15 +210,12 @@ export function PropertyDetail() {
                 </div>
               </div>
               <div className="flex items-baseline gap-2 mb-12">
-                <div className="text-4xl font-black text-lime-500">{property.price}</div>
+                <div className="text-4xl font-black text-lime-500">
+                  {formatPropertyPrice(property.price_actual, property.currency, property.rent_frequency)}
+                </div>
                 {property.price_qualifier && (
                   <div className="text-forest-950/40 text-sm font-bold uppercase tracking-widest">
                     {property.price_qualifier}
-                  </div>
-                )}
-                {property.rent_frequency && (
-                  <div className="text-forest-950/40 text-sm font-bold uppercase tracking-widest">
-                    / {property.rent_frequency}
                   </div>
                 )}
               </div>
