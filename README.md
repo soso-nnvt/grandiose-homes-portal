@@ -1,20 +1,30 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Grandiose Homes Portal
 
-# Run and deploy your AI Studio app
+Real estate investment portal for Grandiose Homes & Investment Ltd. React + Vite + TypeScript frontend with a headless WordPress backend for listings.
 
-This contains everything you need to run your app locally.
+Built for Netnovatelabs: performance, SEO, and lead capture.
 
-View your app in AI Studio: https://ai.studio/apps/c78433c5-ef19-4c14-b96c-ce110fd5e0b0
+## Stack
+- React 19, React Router 7, TypeScript, Vite 6
+- Tailwind CSS 4, lucide-react, motion
+- react-helmet-async for SEO meta
+- Express + Netlify Functions (`server.ts`, `netlify/`) for API/backend
+- Headless WordPress (`WP_BASE_URL`) via REST, axios + node-fetch
+- better-sqlite3 for local caching
 
-## Run Locally
+## Run locally
+1. `npm install`
+2. `cp .env.example .env` and fill in:
+   - `WP_BASE_URL` â€” WordPress REST base, e.g. `https://dev-grandiose-homes.pantheonsite.io/wp-json/wp/v2/`
+   - `WP_AUTH_USERNAME`, `WP_AUTH_APP_PASSWORD` â€” if the WP endpoint needs auth
+3. `npm run dev`
+4. `npm run build` / `npm run preview` for production build
+5. `npm run lint` (`tsc --noEmit`)
 
-**Prerequisites:**  Node.js
+## Deploy
+- `netlify.toml` present â€” deploy as Netlify site with functions.
+- No secrets committed. `.env*` is gitignored except `.env.example`.
 
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Repo
+- Default branch: `main`
+- Author: Abdulsobur Obe â€” https://www.linkedin.com/in/abdulsobur-obe-463a6729b/
